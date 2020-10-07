@@ -8,8 +8,9 @@
 (defn start []
   (if @*server
     (println "Server is already running")
-    (j/run-jetty h/handler {:port  3000
-                            :join? false})))
+    (reset! *server
+            (j/run-jetty #'h/handler {:port  3000
+                                      :join? false}))))
 
 (defn stop []
   (if @*server
