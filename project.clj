@@ -8,5 +8,6 @@
                  [ring/ring-core "1.8.2"]
                  [ring/ring-jetty-adapter "1.6.3"]
                  [compojure "1.6.2"]
-                 [ring/ring-defaults "0.1.1"]]
+                 [ring/ring-defaults "0.1.1"]
+                 [cheshire "5.10.0"]]
   :repl-options {:init-ns aqueductoy.main})

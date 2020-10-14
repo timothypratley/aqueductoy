@@ -10,13 +10,19 @@
     (println "Server is already running")
     (reset! *server
             (j/run-jetty #'h/handler {:port  3000
-                                      :join? false}))))
+                                      :join? false
+                                      ;;:async? true
+                                      }))))
 
 (defn stop []
   (if @*server
     (do (.stop ^Server @*server)
         (reset! *server nil))
     (println "Server is not running")))
+
+(defn restart []
+  (stop)
+  (start))
 
 (defn -main []
   (start))
