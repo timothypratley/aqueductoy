@@ -14,8 +14,12 @@
 
 (defn stop []
   (if @*server
-    (.stop ^Server @*server)
+    (do (.stop ^Server @*server)
+        (reset! *server nil))
     (println "Server is not running")))
 
 (defn -main []
+  (start))
+
+(comment
   (start))
