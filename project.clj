@@ -9,5 +9,7 @@
                  [ring/ring-jetty-adapter "1.6.3"]
                  [compojure "1.6.2"]
                  [ring/ring-defaults "0.1.1"]
-                 [cheshire "5.10.0"]]
+                 [cheshire "5.10.0"]
+                 [aleph "0.4.6"]
+                 [clj-http "3.10.3"]]
   :repl-options {:init-ns aqueductoy.main})

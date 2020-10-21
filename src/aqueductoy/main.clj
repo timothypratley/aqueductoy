@@ -1,7 +1,6 @@
 (ns aqueductoy.main
-  (:require [ring.adapter.jetty :as j]
-            [aqueductoy.handler :as h])
-  (:import (org.eclipse.jetty.server Server)))
+  (:require [aleph.http :as http]
+            [aqueductoy.handler :as h]))
 
 (defonce *server (atom nil))
 
@@ -9,14 +8,11 @@
   (if @*server
     (println "Server is already running")
     (reset! *server
-            (j/run-jetty #'h/handler {:port  3000
-                                      :join? false
-                                      ;;:async? true
-                                      }))))
+            (http/start-server #'h/handler {:port  3000}))))
 
 (defn stop []
   (if @*server
-    (do (.stop ^Server @*server)
+    (do (.close @*server)
         (reset! *server nil))
     (println "Server is not running")))
 
@@ -28,4 +24,14 @@
   (start))
 
 (comment
-  (start))
+  (restart))
+
+
+
+;; http://swannodette.github.io/2013/08/17/comparative/ 
+;From Filipe Silva to Everyone: (7:22 AM)
+; example of rxjs operation:
+;https://rxjs-dev.firebaseapp.com/api/index/function/combineLatest
+;
+;example of rxjs code for that operation:
+;https://www.learnrxjs.io/learn-rxjs/operators/combination/combinelatest
