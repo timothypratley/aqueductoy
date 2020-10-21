@@ -1,10 +1,10 @@
 (ns aqueductoy.webhooks
   "Use case: Third party implementation of a service"
-  (:refer-clojure :exclude [send])
   (:require [compojure.core :as c]
             [ring.util.request :as request]
             [clojure.pprint :as pprint]
-            [clj-http.client :as client])
+            [clj-http.client :as client]
+            [clojure.tools.logging :as log])
   (:import (java.util Date)))
 
 ;;;; db
@@ -23,16 +23,21 @@
 
 (defn add-subscription
   [user-id query callback-url]
-  (swap! *subscriptions update user-id assoc {:query query
-                                              :callback-url callback-url}
+  (swap! *subscriptions update user-id assoc
+         {:query query
+          :callback-url callback-url}
          {:created-at (Date.)}))
 
-(defn send [data]
+(defn notify [data]
   (doseq [[user subscriptions] @*subscriptions
           [{:keys [query callback-url]} _] subscriptions]
-    (prn query callback-url)
     (when (and query data)
-      (client/post callback-url))))
+      ;; async? outbound queue size? monitoring?
+      (try
+        (client/post callback-url {:content-type :json
+                                   :form-params data})
+        (catch Exception ex
+          (log/warn "Failed to send outgoing webhook" callback-url (str ex)))))))
 
 ;;;; request plumbing
 
@@ -68,17 +73,17 @@
 (defn get-subscriptions [req]
   (with-out-str (pprint/pprint @*subscriptions)))
 
-; curl -X POST http://localhost:3000/echo
-(defn get-echo [req]
-  (doto "GOT IT" prn))
+; curl -X POST -d 'hi' http://localhost:3000/echo
+(defn get-echo [{:keys [params] :as req}]
+  (println "ECHO:" params)
+  "OK")
 
 ;;;; routes
 
 (c/defroutes webhook-routes
-  (c/GET "/subscriptions" req #'get-subscriptions)
-  (c/POST "/subscriptions" req #'post-subscriptions)
-  (c/PUT "/subscriptions/:id" req #'put-subscriptions)
-  (c/DELETE "/subscriptions/:id" req #'delete-subscriptions)
-  (c/GET "/subscriptions/:id" req #'get-subscriptions)
-  (c/POST "/echo" req #'get-echo))
-
+  (c/GET "/subscriptions" _req #'get-subscriptions)
+  (c/POST "/subscriptions" _req #'post-subscriptions)
+  (c/PUT "/subscriptions/:id" _req #'put-subscriptions)
+  (c/DELETE "/subscriptions/:id" _req #'delete-subscriptions)
+  (c/GET "/subscriptions/:id" _req #'get-subscriptions)
+  (c/POST "/echo" _req #'get-echo))

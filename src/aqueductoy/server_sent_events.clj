@@ -30,3 +30,5 @@
                   (async/<! (async/timeout 1000))
                   (async/>! ch (stream-msg {:val 100}))
                   (async/close! ch))))))
+
+(defn notify [data])

@@ -3,6 +3,7 @@
             [compojure.core :as c]
             [compojure.route :as route]
             [ring.middleware.defaults :as defaults]
+            [ring.middleware.json :as j]
             [aqueductoy.webhooks :as webhooks]))
 
 ; curl -X GET http://localhost:3000/
@@ -17,4 +18,6 @@
   (route/not-found "<h1>Page not found</h1>"))
 
 (def handler
-  (defaults/wrap-defaults #'app defaults/api-defaults))
+  (-> #'app
+      (defaults/wrap-defaults defaults/api-defaults)
+      (j/wrap-json-params)))
