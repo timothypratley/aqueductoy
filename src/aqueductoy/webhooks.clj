@@ -18,6 +18,9 @@
 (defonce *subscriptions
   (atom {}))
 
+(defonce *delivery
+  )
+
 
 ;;;; model
 
@@ -27,6 +30,20 @@
          {:query query
           :callback-url callback-url}
          {:created-at (Date.)}))
+
+;; Guarantee order, and delivery, but not single delivery
+;;;; What if it gets too far behind?
+;;;; How far behind is too far behind?
+;;;; 10 updates happen within 10ms, send each each takes 200ms, 2 seconds to send them all
+;;;; Should it be configurable?
+;;;; Retry when request is not accepted
+;;;; An identifier would be useful to detect duplicate delivery
+;; Implementation
+;;;; Threads, core.async, manifest database
+;; Queue needs to be durable (for now we'll simulate in memory)
+;;;; Per user:endpoint What hasn't been sent
+;;;; ... t1 ... t2
+;;;; SQS
 
 (defn notify [data]
   (doseq [[user subscriptions] @*subscriptions
@@ -42,8 +59,7 @@
 ;;;; request plumbing
 
 ; curl -X POST 'http://localhost:3000/subscriptions?query=blah&callback_url=http://localhost:3000/echo'
-(defn post-subscriptions [{{:keys [query callback_url]} :params :as req}]
-  (prn req)
+(defn post-subscriptions [{{:keys [query callback_url]} :params}]
   ;; user, query, callback
   (add-subscription "default-user" query callback_url)
   "subscribed")
