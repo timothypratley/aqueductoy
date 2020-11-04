@@ -1,14 +1,22 @@
 (ns aqueductoy.main
   (:require [aleph.http :as http]
-            [aqueductoy.handler :as h]))
+            [aqueductoy.handler :as h]
+            [aqueductoy.db :as db]))
 
 (defonce *server (atom nil))
+
+(def config
+  {:server {:port 3000}
+   :db     {:db-uri "asami:mem://dbname"}})
+
+(defn start* [{:keys [db server]}]
+  (db/init db)
+  (http/start-server #'h/handler server))
 
 (defn start []
   (if @*server
     (println "Server is already running")
-    (reset! *server
-            (http/start-server #'h/handler {:port  3000}))))
+    (reset! *server (start* config))))
 
 (defn stop []
   (if @*server

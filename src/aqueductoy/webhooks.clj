@@ -19,7 +19,7 @@
   (atom {}))
 
 (defonce *delivery
-  )
+  (atom {}))
 
 
 ;;;; model
