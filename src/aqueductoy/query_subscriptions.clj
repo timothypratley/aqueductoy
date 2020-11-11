@@ -31,7 +31,7 @@
   (cond
     graph (match-datoms datoms :graph/name graph)
     tags (match-datoms datoms :tag/name tags)
-    tagged-blocks ()  ;; insufficient to find block changes that have a tag
+    tagged-blocks () ;; insufficient to find block changes that have a tag
     :else (println "Unexpected query" query)))
 
 (defn get-blocks [db tags]
@@ -44,10 +44,9 @@
   )
 
 (defn notify-all [result]
-  #_#_#_
-  (webhooks/notify result)
-  (websockets/notify result)
-  (sse/notify result))
+  #_#_#_(webhooks/notify result)
+      (websockets/notify result)
+      (sse/notify result))
 
 (defn on-change [{:keys [db-after tx-data] :as tx-report}]
   (println "ON_CHANGE" (keys tx-report))
@@ -59,19 +58,14 @@
         (:tags query) (notify ms)
         (:tagged-blocks query) (notify (get-blocks db-after (map last ms)))))))
 
-(def *running (atom false))
-
-;; TODO: to really stop, we'd need an alt channel with a stop command
-(defn listen []
-  (loop [tx-report (async/<!! db/tx-report-queue)]
-    (on-change tx-report)
-    (when @*running
-      (recur (async/<!! db/tx-report-queue)))))
-
 (defn start-listen-thread []
-  (when (not @*running)
-    (reset! *running true)
-    (doto (Thread. listen "listen-thread")
-      (.start))
+  (let [closer (async/chan)]
+    (async/go-loop [[val ch] (async/alts!! [db/tx-report-queue closer])]
+      (when (not= ch closer)
+        (on-change val)
+        (recur (async/alts!! [db/tx-report-queue closer]))))
     (fn []
-      (reset! *running false))))
+      (async/close! closer))))
+
+(comment
+  (def stop (start-listen-thread)))

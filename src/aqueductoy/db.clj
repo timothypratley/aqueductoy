@@ -52,11 +52,6 @@
 (defn db []
   (d/db @*conn))
 
-(defn get-exporers []
-  (d/q '[:find ?movie-title
-         :where [?m :movie/title ?movie-title]]
-       (db)))
-
 (defn now []
   (.getTime (Date.)))
 
@@ -93,3 +88,6 @@
       (.start))
     (fn []
       (reset! *running false))))
+
+(comment
+  (start-novelty-thread))
