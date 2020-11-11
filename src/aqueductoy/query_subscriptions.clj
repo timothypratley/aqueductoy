@@ -68,4 +68,7 @@
       (async/close! closer))))
 
 (comment
-  (def stop (start-listen-thread)))
+  (def stop (start-listen-thread))
+  (stop))
+
+

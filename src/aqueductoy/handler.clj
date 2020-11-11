@@ -3,8 +3,8 @@
             [compojure.core :as c]
             [compojure.route :as route]
             [ring.middleware.defaults :as defaults]
-            [ring.middleware.json :as j]
-            [aqueductoy.webhooks :as webhooks]))
+            [aqueductoy.webhooks :as webhooks]
+            [aqueductoy.websockets :as websockets]))
 
 ; curl -X GET http://localhost:3000/
 (defn hello [_req]
@@ -15,9 +15,9 @@
 (c/defroutes app
   (c/GET "/" _req #'hello)
   #'webhooks/webhook-routes
+  #'websockets/websocket-routes
   (route/not-found "<h1>Page not found</h1>"))
 
 (def handler
   (-> #'app
-      (defaults/wrap-defaults defaults/api-defaults)
-      (j/wrap-json-params)))
+      (defaults/wrap-defaults defaults/site-defaults)))
