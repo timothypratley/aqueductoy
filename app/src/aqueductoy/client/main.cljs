@@ -7,8 +7,6 @@
     [taoensso.sente  :as sente :refer (cb-success?)] ; <--- Add this
     ))
 
-(println "HELLO????")
-
 ;;; Add this: --->
 
 (def ?csrf-token

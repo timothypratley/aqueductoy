@@ -28,7 +28,7 @@
   (stop)
   (start))
 
-(defn -main []
+(defn -main [& args]
   (start))
 
 (comment

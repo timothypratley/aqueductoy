@@ -1,0 +1,26 @@
+@startuml
+
+database "DB" as db {
+}
+
+cloud "API Gateway & Load Balancer" as gateway {
+}
+
+node "Write Service" as block {
+  component "Blocks"
+  interface "REST" as writeapi
+}
+
+node "Read Service" as feed {
+ component "Feed"
+ component "Search"
+ interface "Web Socket"
+ interface "REST" as readapi
+}
+
+gateway --> feed
+gateway --> block
+block --> db
+feed --> db
+
+@enduml

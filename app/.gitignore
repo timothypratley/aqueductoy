@@ -9,6 +9,5 @@ pom.xml.asc
 /.lein-*
 /.nrepl-port
 /.prepl-port
-.hgignore
-.hg/
 resources/public/js/compiled
+.cpcache

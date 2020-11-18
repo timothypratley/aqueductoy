@@ -1,10 +1,14 @@
-# aqueductoy
+g# aqueductoy
 
 Experiment API server to handle subscriptions
 
 ## Usage
 
-lein run
+See subdirectories
+
+## Architecture
+
+![architecture diagram](docs/architecture.png)
 
 ## License
 

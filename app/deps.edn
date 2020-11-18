@@ -1,0 +1,16 @@
+{:deps    {org.clojure/clojure       {:mvn/version "1.10.1"}
+           org.clojure/clojurescript {:mvn/version "1.10.773"}
+           com.taoensso/sente        {:mvn/version "1.16.0"}
+           cljsjs/react              {:mvn/version "16.13.1-0"}
+           cljsjs/react-dom          {:mvn/version "16.13.1-0"}
+           reagent/reagent           {:mvn/version "0.10.0"
+                                      :exclusions [cljsjs/react
+                                                   cljsjs/react-dom
+                                                   cljsjs/react-dom-server]}}
+ :paths   ["src" "resources"]
+ :aliases {:fig   {:extra-deps  {com.bhauman/rebel-readline-cljs {:mvn/version "0.1.4"}
+                                 com.bhauman/figwheel-main       {:mvn/version "0.2.12"}}
+                   :extra-paths ["target" "test"]}
+           :build {:main-opts ["-m" "figwheel.main" "-b" "dev" "-r"]}
+           :min   {:main-opts ["-m" "figwheel.main" "-O" "advanced" "-bo" "dev"]}
+           :test  {:main-opts ["-m" "figwheel.main" "-co" "test.cljs.edn" "-m" "{{test-runner-ns}}"]}}}

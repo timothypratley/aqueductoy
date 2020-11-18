@@ -1,0 +1,5 @@
+{:main "aqueductoy.client.main"
+ :output-dir "resources/public/js/compiled"
+ :output-to "resources/public/js/compiled/main.js"
+ :asset-path "js/compiled"
+ :optimizations :none}
