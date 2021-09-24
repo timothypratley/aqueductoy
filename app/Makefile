@@ -1,2 +1,2 @@
 dev:
-	clojure -A:fig
+	clojure -M:fig -m figwheel.main -b dev -r

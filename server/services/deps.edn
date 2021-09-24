@@ -1,0 +1,8 @@
+{:paths ["src"]
+ :deps  {org.clojure/clojure          {:mvn/version "1.10.1"}
+         hiccup/hiccup                {:mvn/version "1.0.5"}
+
+         cheshire/cheshire            {:mvn/version "5.10.0"}
+         org.clojars.quoll/asami      {:mvn/version "1.2.6"}
+         org.clojars.quoll/asami-loom {:mvn/version "0.2.0"}
+         integrant/integrant          {:mvn/version "0.8.0"}}}

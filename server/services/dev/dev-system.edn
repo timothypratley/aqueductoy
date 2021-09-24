@@ -1,0 +1,8 @@
+{:aqueductoy.logger/stdout        {}
+ :aqueductoy.adapter/aleph        {:port    3000
+                                   :handler #ig/ref :aqueductoy.services.dev/handler}
+ :aqueductoy/webhooks             {:db #ig/ref :aqueductoy/db}
+ :aqueductoy/websocket            {:db #ig/ref :aqueductoy/db}
+ :aqueductoy/server-sent-events   {:db #ig/ref :aqueductoy/db}
+ :aqueductoy/db                   {:db-uri "asami:mem://dbname"}
+ :aqueductoy.services.dev/handler {:route-providers []}}

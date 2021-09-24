@@ -1,0 +1,15 @@
+{:paths ["src"]
+ :deps  {aqueduct/app                {:local/root "../../../app"}
+         aqueduct/db                 {:local/root "../../components/db"}
+         aqueduct/websocket          {:local/root "../../components/websocket"}
+         aqueduct/webhooks           {:local/root "../../components/webhooks"}
+         aqueduct/server-sent-events {:local/root "../../components/server-sent-events"}
+         aqueduct/adapter            {:local/root "../../components/adapter"}
+
+
+         javax.servlet/servlet-api   {:mvn/version "2.5"}
+         ring/ring-core              {:mvn/version "1.8.2"}
+         ring/ring-jetty-adapter     {:mvn/version "1.8.2"}
+         ring/ring-json              {:mvn/version "0.5.0"}
+         compojure/compojure         {:mvn/version "1.6.2"}
+         ring/ring-defaults          {:mvn/version "0.3.2"}}}

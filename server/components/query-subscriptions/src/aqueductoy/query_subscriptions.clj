@@ -1,7 +1,6 @@
 (ns aqueductoy.query-subscriptions
   (:require [aqueductoy.db :as db]
-            [clojure.core.async :as async]
-            [aqueductoy.websockets :as websockets]))
+            [clojure.core.async :as async]))
 
 ;; watching the db for change,
 ;; using queries to figure out notifications that need to be sent

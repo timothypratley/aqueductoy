@@ -1,10 +1,11 @@
-(ns aqueductoy.websockets
+(ns aqueductoy.websocket
   "Browser subscriptions with bi-directional communication"
   (:require [compojure.core :as c]
             [taoensso.sente :as sente]
             [taoensso.sente.server-adapters.aleph :as aa]
             [hiccup.core :as h]
-            [ring.middleware.anti-forgery :as af]))
+            [ring.middleware.anti-forgery :as af]
+            [integrant.core :as ig]))
 
 ;; send message to particular clients
 ;; authentication / identification
@@ -27,36 +28,10 @@
 
 (defmethod handle-event :chsk/ws-ping [_])
 
-;; Setup
-
-(defonce *stop-router (atom nil))
-(defonce *channel-socket (atom nil))
-
-(defn start []
-  (if @*channel-socket
-    (println "Sente already started")
-    (do
-      (reset! *channel-socket (sente/make-channel-socket!
-                                (aa/get-sch-adapter)
-                                ;; TODO: does this actually do anything? Shouldn't ring take care of this??
-                                {:allowed-origins #{"http://localhost:3000"}}))
-      (reset! *stop-router
-              (sente/start-chsk-router! (:ch-recv @*channel-socket) handle-event)))))
-
-(defn stop []
-  (if (not @*channel-socket)
-    (println "Sente is not running")
-    (do
-      (@*stop-router)
-      (reset! *stop-router nil)
-      ;; TODO: what, if anything, should be closed?
-      ;;(async/close! (:ch-recv @*channel-socket))
-      ;;(async/close! (:ch-send @*channel-socket))
-      (reset! *channel-socket nil))))
 
 ;; Don't really want a hiccup page, but using it for now due to CSRF
 
-(defn page [req]
+(defn page [this req]
   (h/html
     [:html {:lang "en"}
      [:head
@@ -77,23 +52,36 @@
       [:div#sente-csrf-token {:data-csrf-token (force af/*anti-forgery-token*)}]
       [:script {:src "js/compiled/main.js" :type "text/javascript"}]]]))
 
-(defn get-chsk [req]
-  (when-let [f (:ring-ajax-get-or-ws-handshake @*channel-socket)]
-    (f req)))
+(defn get-chsk [this req]
+  ((:ring-ajax-get-or-ws-handshake (:channel-socket this)) req))
 
-(defn post-chsk [req]
-  (when-let [f (:ring-ajax-post @*channel-socket)]
-    (f req)))
+(defn post-chsk [this req]
+  ((:ring-ajax-post (:channel-socket this)) req))
 
-(defn send! [& args]
-  (when-let [f (:send-fn @*channel-socket)]
-    (apply f args)))
+(defn send! [this & args]
+  (apply (:send-fn (:channel-socket this)) args))
 
 (defn notify [x]
   ;; figure out who to send stuff to
   )
 
-(c/defroutes websocket-routes
-  (c/GET "/client" _req #'page)
-  (c/GET "/chsk" _req #'get-chsk)
-  (c/POST "/chsk" _req #'post-chsk))
+;; record??
+;; just match?
+(defn routes [this]
+  (c/routes
+    (c/GET "/client" req (page this req))
+    (c/GET "/chsk" req (get-chsk this req))
+    (c/POST "/chsk" req (post-chsk this req))))
+
+(defmethod ig/init-key :aqueductoy/websocket [_ {:keys [logger]}]
+  (let [channel-socket (sente/make-channel-socket!
+                         (aa/get-sch-adapter)
+                         ;; TODO: does this actually do anything? Shouldn't ring take care of this??
+                         {:allowed-origins #{"http://localhost:3000"}})]
+    {:stop-router    (sente/start-chsk-router! (:ch-recv channel-socket) handle-event)
+     :channel-socket channel-socket
+     :routes         routes
+     :config         {}}))
+
+(defmethod ig/halt-key! :aqueductoy/websocket [_ {:keys [stop-router]}]
+  (stop-router))

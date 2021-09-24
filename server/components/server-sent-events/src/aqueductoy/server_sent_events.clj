@@ -1,7 +1,14 @@
 (ns aqueductoy.server-sent-events
   "Use case: Browser connections with single direction updates"
   (:require [cheshire.core :as json]
-            [compojure.core :as c]))
+            [compojure.core :as c]
+            [integrant.core :as ig]))
+
+(defmethod ig/init-key :aqueductoy/server-sent-events [_ {:keys []}]
+  {})
+
+(defmethod ig/halt-key! :aqueductoy/server-sent-events [_ {:keys []}]
+  )
 
 (def stream-response
   (partial assoc {:status 200, :headers {"Content-Type" "text/event-stream"}} :body))

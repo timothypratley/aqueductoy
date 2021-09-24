@@ -1,4 +1,4 @@
-g# aqueductoy
+# aqueductoy
 
 Experiment API server to handle subscriptions
 
